@@ -23,4 +23,3 @@ To train the model(s) in the paper, run this command:
 ```train
 python mian.py --dataset <path_to_data>
 ```
-
