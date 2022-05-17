@@ -125,3 +125,43 @@ class GMN(nn.Module):
         #z = self.mlp(X)   #1
 
         return z,nca_loss1+nca_loss2
+    
+def MultiSimilarityLoss(feats, labels,p_mask):
+    thresh = 0.5
+    margin = 0.1
+    scale_pos = 2.0
+    scale_neg = 40.0
+    batch_size = feats.size(0)
+    sim_mat = F.softmax(torch.matmul(feats, torch.t(feats)),dim=1)# *0.01#*p_mask * 0.01
+    p = p_mask==1
+    sim_mat =  sim_mat #* p_mask
+
+    #sim_mat = p_mask
+    epsilon = 1e-5
+    loss = list()
+    #print(sim_mat.shape)
+    for i in range(batch_size):
+        pos_pair_ = sim_mat[i][labels == labels[i]]
+        pos_pair_ = pos_pair_[pos_pair_ < 1 - epsilon]
+        neg_pair_ = sim_mat[i][labels != labels[i]]
+        #print(labels == labels[i])
+
+        if len(neg_pair_) < 1 or len(pos_pair_) < 1:
+            continue
+        neg_pair = neg_pair_[neg_pair_ + margin > min(pos_pair_)]
+        pos_pair = pos_pair_[pos_pair_ - margin < max(neg_pair_)]
+        if len(neg_pair) < 1 or len(pos_pair) < 1:
+            continue
+
+        # weighting step
+        pos_loss = 1.0 / scale_pos * torch.log(
+            1 + torch.sum(torch.exp(-scale_pos * (pos_pair - thresh))))
+        neg_loss = 1.0 / scale_neg * torch.log(
+            1 + torch.sum(torch.exp(scale_neg * (neg_pair - thresh))))
+        loss.append(pos_loss + neg_loss)
+
+    if len(loss) == 0:
+        return torch.zeros([], requires_grad=False)
+
+    loss = sum(loss) / batch_size
+    return loss
