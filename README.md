@@ -1,4 +1,4 @@
->📋  A template README.md for code accompanying a Machine Learning paper (The complete code will be updated after the publication of the paper!)
+>📋  A template README.md for code accompanying our paper. (The complete code and data will be updated after the publication of the paper!)
 
 # Graph Mask Network
 
