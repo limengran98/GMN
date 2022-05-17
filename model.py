@@ -80,7 +80,10 @@ class Mask(nn.Module):
  
           self.target = self.a * torch.sum(pi_arr)
 
-          pij_mat_mask = self.normalize(pij_mat_mask)
+          #pij_mat_mask = F.softmax(pij_mat_mask,dim=1)
+          pij_mat_mask = self.relu(pij_mat_mask)
+          #pij_mat_mask = self.normalize(pij_mat_mask)
+        
           X1 = torch.mm(pij_mat_mask, Wh)
         #X = torch.mm(adj, Wh)
         #print(self.a)
