@@ -17,7 +17,7 @@ from dataset.Amazon import Amazon
 
 from utils.cora_ml import read_cora_ml_data
 from utils.other import *
-from model import GMN
+from model import GMN, MultiSimilarityLoss
 
 from sklearn import preprocessing
 from sklearn.metrics import accuracy_score,precision_score,recall_score,classification_report,f1_score
